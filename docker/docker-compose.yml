@@ -1,0 +1,53 @@
+services:
+  prestashop:
+    image: prestashop/prestashop-flashlight:${FLASHLIGHT_DOCKER_TAG}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ${MODULE_DIRECTORY}:/var/www/html/modules/${MODULE_NAME}:rw
+    environment:
+      - PS_DOMAIN=localhost:8000
+    ports:
+      - 8000:80
+    networks:
+      - prestashop
+
+  mysql:
+    image: mariadb:${MARIADB_DOCKER_TAG}
+    container_name: prestashop-mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "--host=localhost",
+          "--user=prestashop",
+          "--password=prestashop",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=prestashop
+      - MYSQL_PASSWORD=prestashop
+      - MYSQL_ROOT_PASSWORD=prestashop
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=prestashop
+    expose:
+      - 3306
+    networks:
+      - prestashop
+
+  php-lint:
+    volumes:
+      - ${MODULE_DIRECTORY}:/module:rw
+      - ./scripts/php-lint.sh:/php-lint.sh:ro
+    entrypoint: /php-lint.sh
+    command: /module
+
+networks:
+  prestashop:
+    driver: bridge

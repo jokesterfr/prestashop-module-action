@@ -1,0 +1,40 @@
+name: PrestaShop Module Action
+description: Compatibility toolkit for PrestaShop module
+author: Clément Désiles
+
+inputs:
+  actions:
+    description: list of action(s) to run sequentially
+    required: true
+  module-directory:
+    description: directory where the module can be found
+    required: false
+    default: ./
+  module-zip-file:
+    description: path of the module zip file to build or use
+    required: false
+    default: ./dist/module.zip
+  module-name:
+    description: name of your module
+    required: true
+  prestashop-version:
+    description: prestashop version(s) to be used for the action
+    required: false
+  php-version:
+    description: prestashop version(s) to be used for the action
+    required: false
+  phpunit-configuration:
+    description: path where to find the phpunit configuration (required only if using phpunit action)
+    required: false
+  phpstan-configuration:
+    description: path where to find the phpstan configuration (required only if using phpstan action)
+  
+# # Define your outputs here.
+# outputs:
+#   time:
+#     description: The time we greeted you
+
+runs:
+  using: node20
+  main: main.js
+  post: post.js
